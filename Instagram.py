@@ -1,6 +1,6 @@
 from InstagramAPI import InstagramAPI
 
-InstagramAPI = InstagramAPI("themanmahon", "Ian_Mahon1")
+InstagramAPI = InstagramAPI("", "")
 InstagramAPI.login()
 
 #InstagramAPI.getProfileData()
