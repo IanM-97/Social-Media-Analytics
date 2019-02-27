@@ -1,6 +1,6 @@
 import facebook
 import InstagramAPI
-token = 'EAADm9nbycx4BACbP0Jjrr0itWWH7wjg9RcCmOg5GpmHsFa91burnYRLfUsQfqcxcHpv85t3E4LwZCZCkQ9cJ2j5M1ocmBs5RS9idOGcurN3Lgrm1qXydBvS7TpX9kUZAx0QswBZApd4csAdRZCUOvFZAW3ZB4EKeCdgTzxwsWCh7wZDZD'
+token = 'EAADm9nbycx4BANuGpBHQKJtNnye1VmgIJiFZCCLYjYIVZCNcZCsTgzJS3RiLEu8ZCFVLh2EK63LDDejTWn0Tm891F0K1MkqSP5vRm13oUawCbzxX0yBIzT8m5AqLaxpTfHJQp7N0BMWIjDzzXyGwnov5zWl4p5OQTovIK9BvN0aAPOgFlbUZAb8B0TuPUmG4ZD'
 
 import facebook
 import os
@@ -31,8 +31,13 @@ for post in posts['data']:
 import os
 import json
 
+mypage = 345279809417210
+
 graph = facebook.GraphAPI(token)
-posts = graph.get_connections('me', 'posts')
+posts = graph.get_connections(mypage, 'posts')
 
 for post in posts['data']:
-    print(post)
+    id = post['id']
+    likes = graph.get_connections(id, connection_name='likes', summary='true')
+    comments = graph.get_connections(id, connection_name='comments', summary='true')
+    print(likes['summary'], comments['summary'])
