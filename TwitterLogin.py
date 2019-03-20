@@ -26,7 +26,7 @@ tweets = browser.find_elements_by_class_name("tweet-text")
 for tweet in tweets:
     print(tweet)
 
-Att = browser.find_element_by_xpath('//*[@id="stream-item-tweet-1067180894186819584"]/div[1]/div[2]/div[3]/div[2]')
+Att = browser.find_element_by_xpath('//*[@id="stream-item-tweet-1067180894186819584"]/div[1]/div[2]/div[2]/div[2]')
 html = Att.get_attribute('outerHTML')
 attributes = BeautifulSoup(html, 'html.parser').a.attrs
 print(attributes)'''
@@ -40,52 +40,61 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
 
+
+from unidecode import unidecode
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
 from bs4 import BeautifulSoup as bs
 import time
 
 
 chrome_options = Options()
+chrome_options.add_argument("--window-size=1920,1080")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("useAutomationExtension")
+chrome_options.add_argument("--proxy-server='direct://'")
+chrome_options.add_argument("--proxy-bypass-list=*")
+chrome_options.add_argument("--start-maximized")
 chrome_options.add_argument("--headless")
-# chrome_options.add_argument("--window-size=1920x1080")
+#chrome_options.add_argument("--headless")
+#chrome_options.add_argument("--window-size=1920x1080")
 
 
 def init_driver():
     # initiate the driver:
     driver = webdriver.Chrome(chrome_options=chrome_options)
+    # driver = webdriver.PhantomJS()
 
     # set a default wait time for the browser [5 seconds here]:
     driver.wait = WebDriverWait(driver, 5)
 
     return driver
 
-
 def close_driver(driver):
     driver.close()
-
     return
 
-
 def login_twitter(driver, username, password):
-    # open the web page in the browser:
+    # opens the web page in the browser:
     driver.get("https://twitter.com/login")
 
-    # find the boxes for username and password
+    # finds the boxes for username and password
     username_field = driver.find_element_by_class_name("js-username-field")
     password_field = driver.find_element_by_class_name("js-password-field")
 
-    # enter your username:
+    # enters username:
     username_field.send_keys(username)
     driver.implicitly_wait(1)
 
-    # enter your password:
+    # enters password:
     password_field.send_keys(password)
     driver.implicitly_wait(1)
 
-    # click the "Log In" button:
+    # clicks the "Log In" button:
     driver.find_element_by_class_name("EdgeButtom--medium").click()
 
     return
-
 
 class wait_for_more_than_n_elements_to_be_present(object):
     def __init__(self, locator, count):
@@ -99,8 +108,9 @@ class wait_for_more_than_n_elements_to_be_present(object):
         except StaleElementReferenceException:
             return False
 
+def Go_to_self(driver, username, password):
 
-def Go_to_self(driver, username):
+    login_twitter(driver, username, password)
 
     driver.get("https://twitter.com/" + username)
     # initial wait for the search results to load
@@ -183,11 +193,14 @@ def Search_HashTag(driver, user, query):
             # extract all the tweets:
             tweets = driver.find_elements_by_css_selector("li[data-item-id]")
 
+            # keep scrolling:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
             # find number of visible tweets:
             number_of_tweets = len(tweets)
 
-            # keep scrolling:
-            driver.execute_script("arguments[0].scrollIntoView();", tweets[-1])
+            #Wait for more to load
+            wait = WebDriverWait(driver, 5)
 
             try:
                 # wait for more tweets to be visible:
@@ -209,7 +222,6 @@ def Search_HashTag(driver, user, query):
         page_source = None
 
     return page_source
-
 
 def search_twitter(driver, query):
     # wait until the search box has loaded:
@@ -266,13 +278,29 @@ def search_twitter(driver, query):
 
     return page_source
 
-
 def extract_tweets(page_source):
 
     soup = bs(page_source, 'lxml')
 
+    i = 0
+    impressions = []
+
+  #  for item in page_source:
+        # Open analytics of each tweet
+   #     driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div[4]/div/div/div[2]/div/div[2]/div[4]/div/div[2]/ol[1]/li[2]/div[1]/div[2]/div[2]/div[2]/div[4]/button").click()
+    #    impressions[i] = driver.find_element_by_css_selector("ep-MetricAnimation").getText()
+     #   i+=1
+      #  print(impressions[i])
+
     tweets = []
     for li in soup.find_all("li", class_='js-stream-item'):
+
+        totalValue = 0
+        totalRetweets = 0
+        totalFavourites = 0
+        totalReplies = 0
+
+        #print("\nStart of item \n", li, "\nEnd of Item\n")
 
         # If our li doesn't have a tweet-id, we skip it as it's not going to be a tweet.
         if 'data-item-id' not in li.attrs:
@@ -287,7 +315,9 @@ def extract_tweets(page_source):
                 'created_at': None,
                 'retweets': 0,
                 'likes': 0,
-                'replies': 0
+                'replies': 0,
+                'impressions': 0,
+                'value': 0
             }
 
             # Tweet Text
@@ -322,14 +352,46 @@ def extract_tweets(page_source):
             if reply_span is not None and len(reply_span) > 0:
                 tweet['replies'] = int(reply_span[0]['data-tweet-stat-count'])
 
+            # Tweet impressions
+            if "ProfileTweet-actionButton" in li:
+                driver.find_element_by_css_selector(".ProfileTweet-actionButton.u-textUserColorHover.js-actionButton.js-actionQuickPromote").click()
+                impressions = driver.find_element_by_css_selector("ep-MetricValue").getText()
+                # print("\nStart of item \n", li, "\nEnd of Item\n")
+                print("Impressions: ", impressions)
+                #driver.find_element_by_css_selector("QuickPromoteDialog modal-container").click()
+
+
+            # Tweet VALUE ROI
+            tweet['value'] += round((tweet['replies'] * 0.10),2)
+            tweet['value'] += round((tweet['likes'] * 0.15),2)
+            tweet['value'] += round((tweet['retweets'] * 0.25),2)
+
+
             tweets.append(tweet)
 
     for tweet in tweets:
+        i += 1
+        Value = round(tweet['value'],2)
+        print("\nTweet Number: ", i)
         print("Username: ", tweet['user_name'])
         print("Text: ", tweet['text'])
         print("Retweets: ", tweet['retweets'])
         print("Likes: ", tweet['likes'])
         print("Replies: ", tweet['replies'])
+        print("Impressions: ", tweet['impressions'])
+        print("Value: €", Value)
+
+        totalValue += round(tweet['value'],2)
+        totalFavourites += tweet['likes']
+        totalReplies += tweet['replies']
+        totalRetweets += tweet['retweets']
+
+
+    print("\n******Totals of all Values in ths Ad Campaign*****\n")
+    print("\nTotal Value of all tweets: €", round(totalValue, 2))
+    print("\nTotal number of all replies: ", totalReplies)
+    print("\nTotal number of all favourite: ", totalFavourites)
+    print("\nTotal number of all retweets: ", totalRetweets)
 
 
 # start a driver for a web browser:
@@ -339,25 +401,22 @@ driver = init_driver()
 #username = "themanmahon"
 #password = "Chocolate1"
 #login_twitter(driver, username, password)
+##### Search Hashtag
 
-username = "@realdonaldtrump"
-query = "#FakeNews"
+Search_username = "@paddypower"
+query = "#Brexit"
+
+##### search self:
+User_Self = "@themanmahon"
+password ="Chocolate1"
+#page_source = search_twitter(driver, query)
 
 # search twitter:
-# query = "@themanmahon"
-# page_source = search_twitter(driver, query)
-
-# search twitter:
-page_source = Search_HashTag(driver, username, query)
-
+# page_source = Search_HashTag(driver, Search_username, query)
+page_source = Go_to_self(driver, User_Self, password)
 # extract info from the search results:
 tweets = extract_tweets(page_source)
 
-# ==============================================
-# add in any other functions here
-# maybe some analysis functions
-# maybe a function to write the info to file
-# ==============================================
-
-# close the driver:
+# close and quit the driver:
 close_driver(driver)
+
