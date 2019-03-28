@@ -31,38 +31,40 @@ html = Att.get_attribute('outerHTML')
 attributes = BeautifulSoup(html, 'html.parser').a.attrs
 print(attributes)'''
 
-import selenium
+from bs4 import BeautifulSoup as bs
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
-from unidecode import unidecode
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+class wait_for_more_than_n_elements_to_be_present(object):
+    def __init__(self, locator, count):
+        self.locator = locator
+        self.count = count
 
-from bs4 import BeautifulSoup as bs
-import time
-
-
-chrome_options = Options()
-chrome_options.add_argument("--window-size=1920,1080")
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--disable-extensions")
-chrome_options.add_argument("useAutomationExtension")
-chrome_options.add_argument("--proxy-server='direct://'")
-chrome_options.add_argument("--proxy-bypass-list=*")
-chrome_options.add_argument("--start-maximized")
-chrome_options.add_argument("--headless")
-#chrome_options.add_argument("--headless")
-#chrome_options.add_argument("--window-size=1920x1080")
+    def __call__(self, driver):
+        try:
+            elements = EC._find_elements(driver, self.locator)
+            return len(elements) > self.count
+        except StaleElementReferenceException:
+            return False
 
 
 def init_driver():
     # initiate the driver:
+    chrome_options = Options()
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("useAutomationExtension")
+    chrome_options.add_argument("--proxy-server='direct://'")
+    chrome_options.add_argument("--proxy-bypass-list=*")
+    chrome_options.add_argument("--start-maximized")
+    # chrome_options.add_argument("--headless")
+
     driver = webdriver.Chrome(chrome_options=chrome_options)
     # driver = webdriver.PhantomJS()
 
@@ -71,9 +73,11 @@ def init_driver():
 
     return driver
 
+
 def close_driver(driver):
     driver.close()
     return
+
 
 def login_twitter(driver, username, password):
     # opens the web page in the browser:
@@ -94,25 +98,12 @@ def login_twitter(driver, username, password):
     # clicks the "Log In" button:
     driver.find_element_by_class_name("EdgeButtom--medium").click()
 
-    return
+    return True
 
-class wait_for_more_than_n_elements_to_be_present(object):
-    def __init__(self, locator, count):
-        self.locator = locator
-        self.count = count
 
-    def __call__(self, driver):
-        try:
-            elements = EC._find_elements(driver, self.locator)
-            return len(elements) > self.count
-        except StaleElementReferenceException:
-            return False
+def Go_to_self(driver, username):
 
-def Go_to_self(driver, username, password):
-
-    login_twitter(driver, username, password)
-
-    driver.get("https://twitter.com/" + username)
+    driver.get("https://twitter.com/"+"@"+username)
     # initial wait for the search results to load
     wait = WebDriverWait(driver, 10)
 
@@ -140,6 +131,7 @@ def Go_to_self(driver, username, password):
 
             except TimeoutException:
                 # if no more are visible the "wait.until" call will timeout.
+                print("No More tweets available")
                 # Catch the exception and exit the while loop:
                 break
 
@@ -154,8 +146,8 @@ def Go_to_self(driver, username, password):
 
     return page_source
 
-def Search_HashTag(driver, user, query):
 
+def Search_HashTag(driver, user, query):
     driver.get("https://twitter.com/search-advanced?lang=en")
     # initial wait for the search results to load
     # wait until the search box has loaded:
@@ -199,7 +191,7 @@ def Search_HashTag(driver, user, query):
             # find number of visible tweets:
             number_of_tweets = len(tweets)
 
-            #Wait for more to load
+            # Wait for more to load
             wait = WebDriverWait(driver, 5)
 
             try:
@@ -222,6 +214,158 @@ def Search_HashTag(driver, user, query):
         page_source = None
 
     return page_source
+
+
+def Search_Specific_User_TimeFrame(driver, user, sinceDate, untilDate, query=""):
+    driver.get("https://twitter.com/search-advanced?lang=en")
+    # initial wait for the search results to load
+    # wait until the search box has loaded:
+    Hashtagbox = driver.wait.until(EC.presence_of_element_located((By.NAME, "tag")))
+
+    # wait until the search box has loaded:
+    User = driver.wait.until(EC.presence_of_element_located((By.NAME, "from")))
+
+    # find the search box in the html:
+    driver.find_element_by_name("from").clear()
+
+    # enter your search string in the search box:
+    User.send_keys(user)
+
+    if (query != ""):
+        Hashtagbox.send_keys(query)
+
+    # since
+    sinceBox = driver.wait.until(EC.presence_of_element_located((By.NAME, "since")))
+
+    # until
+    untilBox = driver.wait.until(EC.presence_of_element_located((By.NAME, "until")))
+
+    # ActionChains(driver).move_to_element(sinceBox).click().send_keys(sinceDate).perform()
+
+    # ActionChains(driver).move_to_element(untilBox).click().send_keys(untilDate).perform()
+
+    driver.execute_script("arguments[0].removeAttribute('readonly')", sinceBox)
+    driver.execute_script("arguments[0].removeAttribute('readonly')", untilBox)
+
+    untilBox.send_keys(untilDate)
+
+    #####For some reason the date pickers dont work if since is inputted before until??
+
+    sinceBox.send_keys(sinceDate)
+
+    # Submit
+    sinceBox.submit()
+
+    # initial wait for the search results to load
+    wait = WebDriverWait(driver, 10)
+
+    try:
+        # wait until the first search result is found.
+        # Search results will be tweets, which are html list items and have the class='data-item-id':
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "li[data-item-id]")))
+
+        # scroll down to the last tweet until there are no more tweets:
+        while True:
+
+            # extract all the tweets:
+            tweets = driver.find_elements_by_css_selector("li[data-item-id]")
+
+            # keep scrolling:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+            # find number of visible tweets:
+            number_of_tweets = len(tweets)
+
+            # Wait for more to load
+            wait = WebDriverWait(driver, 5)
+
+            try:
+                # wait for more tweets to be visible:
+                wait.until(wait_for_more_than_n_elements_to_be_present(
+                    (By.CSS_SELECTOR, "li[data-item-id]"), number_of_tweets))
+
+            except TimeoutException:
+                # if no more are visible the "wait.until" call will timeout.
+                # Catch the exception and exit the while loop:
+                break
+
+        # extract the html for the whole lot:
+        page_source = driver.page_source
+
+    except TimeoutException:
+        # if there are no search results then the
+        # "wait.until" call in the first "try" statement will never happen and it will time out.
+        # So we catch that exception and return no html.
+        page_source = None
+
+    return page_source
+
+
+def Search_Specific_User(driver, user, query=""):
+    driver.get("https://twitter.com/search-advanced?lang=en")
+    # initial wait for the search results to load
+    # wait until the search box has loaded:
+    Hashtagbox = driver.wait.until(EC.presence_of_element_located((By.NAME, "tag")))
+
+    # wait until the search box has loaded:
+    User = driver.wait.until(EC.presence_of_element_located((By.NAME, "from")))
+
+    # find the search box in the html:
+    driver.find_element_by_name("from").clear()
+
+    if (query != ""):
+        Hashtagbox.send_keys(query)
+
+    # enter your search string in the search box:
+    User.send_keys(user)
+
+    # Submit
+    User.submit()
+
+    # initial wait for the search results to load
+    wait = WebDriverWait(driver, 10)
+
+    try:
+        # wait until the first search result is found.
+        # Search results will be tweets, which are html list items and have the class='data-item-id':
+        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "li[data-item-id]")))
+
+        # scroll down to the last tweet until there are no more tweets:
+        while True:
+
+            # extract all the tweets:
+            tweets = driver.find_elements_by_css_selector("li[data-item-id]")
+
+            # keep scrolling:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+            # find number of visible tweets:
+            number_of_tweets = len(tweets)
+
+            # Wait for more to load
+            wait = WebDriverWait(driver, 10)
+
+            try:
+                # wait for more tweets to be visible:
+                wait.until(wait_for_more_than_n_elements_to_be_present(
+                    (By.CSS_SELECTOR, "li[data-item-id]"), number_of_tweets))
+
+            except TimeoutException:
+                # if no more are visible the "wait.until" call will timeout.
+                # Catch the exception and exit the while loop:
+                break
+
+        # extract the html for the whole lot:
+        page_source = driver.page_source
+
+    except TimeoutException:
+        # if there are no search results then the
+        # "wait.until" call in the first "try" statement will never happen and it will time out.
+        # So we catch that exception and return no html.
+        page_source = None
+
+    return page_source
+
 
 def search_twitter(driver, query):
     # wait until the search box has loaded:
@@ -278,19 +422,19 @@ def search_twitter(driver, query):
 
     return page_source
 
-def extract_tweets(page_source):
 
+def extract_tweets(page_source):
     soup = bs(page_source, 'lxml')
 
     i = 0
     impressions = []
 
-  #  for item in page_source:
-        # Open analytics of each tweet
-   #     driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div[4]/div/div/div[2]/div/div[2]/div[4]/div/div[2]/ol[1]/li[2]/div[1]/div[2]/div[2]/div[2]/div[4]/button").click()
+    #  for item in page_source:
+    # Open analytics of each tweet
+    #     driver.find_element_by_xpath("/html/body/div[2]/div[2]/div/div[4]/div/div/div[2]/div/div[2]/div[4]/div/div[2]/ol[1]/li[2]/div[1]/div[2]/div[2]/div[2]/div[4]/button").click()
     #    impressions[i] = driver.find_element_by_css_selector("ep-MetricAnimation").getText()
-     #   i+=1
-      #  print(impressions[i])
+    #   i+=1
+    #  print(impressions[i])
 
     tweets = []
     for li in soup.find_all("li", class_='js-stream-item'):
@@ -300,7 +444,7 @@ def extract_tweets(page_source):
         totalFavourites = 0
         totalReplies = 0
 
-        #print("\nStart of item \n", li, "\nEnd of Item\n")
+        # print("\nStart of item \n", li, "\nEnd of Item\n")
 
         # If our li doesn't have a tweet-id, we skip it as it's not going to be a tweet.
         if 'data-item-id' not in li.attrs:
@@ -353,25 +497,31 @@ def extract_tweets(page_source):
                 tweet['replies'] = int(reply_span[0]['data-tweet-stat-count'])
 
             # Tweet impressions
-            if "ProfileTweet-actionButton" in li:
-                driver.find_element_by_css_selector(".ProfileTweet-actionButton.u-textUserColorHover.js-actionButton.js-actionQuickPromote").click()
+            '''analytics_span = li.select("div.ProfileTweet-action.ProfileTweet-action--analytics")
+            if analytics_span is not None and len(analytics_span) > 0:
+                analyticsbutton = driver.find_element_by_css_selector(".ProfileTweet-actionButton")
+                driver.execute_script("arguments[0].scrollIntoView();", analyticsbutton)
+                analyticsbutton.click()
                 impressions = driver.find_element_by_css_selector("ep-MetricValue").getText()
-                # print("\nStart of item \n", li, "\nEnd of Item\n")
-                print("Impressions: ", impressions)
-                #driver.find_element_by_css_selector("QuickPromoteDialog modal-container").click()
+                print(impressions)'''
+
+            # driver.find_element_by_css_selector(".ProfileTweet-actionButton.u-textUserColorHover.js-actionButton.js-actionQuickPromote").click()
+            # impressions = driver.find_element_by_css_selector("ep-MetricValue").getText()
+            # print("\nStart of item \n", li, "\nEnd of Item\n")
+            # print("Impressions: ", impressions)
+            # driver.find_element_by_css_selector("QuickPromoteDialog modal-container").click()
 
 
             # Tweet VALUE ROI
-            tweet['value'] += round((tweet['replies'] * 0.10),2)
-            tweet['value'] += round((tweet['likes'] * 0.15),2)
-            tweet['value'] += round((tweet['retweets'] * 0.25),2)
-
+            tweet['value'] += round((tweet['replies'] * 0.10), 2)
+            tweet['value'] += round((tweet['likes'] * 0.15), 2)
+            tweet['value'] += round((tweet['retweets'] * 0.25), 2)
 
             tweets.append(tweet)
 
     for tweet in tweets:
         i += 1
-        Value = round(tweet['value'],2)
+        '''Value = round(tweet['value'],2)
         print("\nTweet Number: ", i)
         print("Username: ", tweet['user_name'])
         print("Text: ", tweet['text'])
@@ -379,44 +529,60 @@ def extract_tweets(page_source):
         print("Likes: ", tweet['likes'])
         print("Replies: ", tweet['replies'])
         print("Impressions: ", tweet['impressions'])
-        print("Value: €", Value)
+        print("Value: €", Value)'''
 
-        totalValue += round(tweet['value'],2)
+        totalValue += round(tweet['value'], 2)
         totalFavourites += tweet['likes']
         totalReplies += tweet['replies']
         totalRetweets += tweet['retweets']
 
+        finalTotalValue = round(totalValue, 2)
+
+        # results = [finalTotalValue, totalRetweets, totalFavourites, totalReplies]
+
+        # return results
 
     print("\n******Totals of all Values in ths Ad Campaign*****\n")
     print("\nTotal Value of all tweets: €", round(totalValue, 2))
     print("\nTotal number of all replies: ", totalReplies)
     print("\nTotal number of all favourite: ", totalFavourites)
     print("\nTotal number of all retweets: ", totalRetweets)
+    print("\nTotal number of all tweets: ", i)
 
+    return (finalTotalValue, totalRetweets, totalFavourites, totalReplies, i)
 
 # start a driver for a web browser:
-driver = init_driver()
+# driver = init_driver()
 
 # log in to twitter (replace username/password with your own):
-#username = "themanmahon"
-#password = "Chocolate1"
-#login_twitter(driver, username, password)
+# username = "themanmahon"
+# password = "Chocolate1"
+# login_twitter(driver, username, password)
 ##### Search Hashtag
 
-Search_username = "@paddypower"
-query = "#Brexit"
+
+####QUERIES FOR SEARCHING A SPECIFIC ACCOUNT FOR A SPECIFIC HASHTAG
+# Search_username = "@paddypower"
+# query = "#Brexit"
 
 ##### search self:
-User_Self = "@themanmahon"
-password ="Chocolate1"
-#page_source = search_twitter(driver, query)
+# User_Self = "@themanmahon"
+# password ="Chocolate1"
+# page_source = search_twitter(driver, query)
+
+
+#######SINCE
+# since = "2015-04-02"
+
+#######TILL
+# till = "2018-05-24"
 
 # search twitter:
 # page_source = Search_HashTag(driver, Search_username, query)
-page_source = Go_to_self(driver, User_Self, password)
+# page_source = Go_to_self(driver, User_Self, password)
+# page_source = Search_Specific_User(driver, User_Self, password, since, till)
 # extract info from the search results:
-tweets = extract_tweets(page_source)
+# tweets = extract_tweets(page_source)
 
 # close and quit the driver:
-close_driver(driver)
-
+# close_driver(driver)
