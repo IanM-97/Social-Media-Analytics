@@ -2,7 +2,7 @@
 username = "themanmahon"
 password = "Ian_Mahon1"
 
-def extract_insta_posts(username, password):
+def extract_insta_posts(username=username, password=password):
     from InstagramAPI import InstagramAPI
 
     InstagramAPI = InstagramAPI(username, password)
@@ -43,12 +43,14 @@ def extract_insta_posts(username, password):
         totalComments += item['comment_count']
         totalLikes += item['like_count']
 
+    finalTotalValue = round(totalValue,2)
+
    # print("\n******Totals of all Posts******\n")
    # print("Total Number of Posts: ", numPosts)
    # print("Total Likes: ", totalLikes)
    # print("Total Comments: ", totalComments)
    # print("Total Overall Value: €", round(totalValue,2))
 
-    return numPosts, totalValue, totalLikes, totalComments
+    return numPosts, finalTotalValue, totalLikes, totalComments
 
 

@@ -32,6 +32,7 @@ attributes = BeautifulSoup(html, 'html.parser').a.attrs
 print(attributes)'''
 
 from bs4 import BeautifulSoup as bs
+from flask import flash
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.chrome.options import Options
@@ -63,7 +64,7 @@ def init_driver():
     chrome_options.add_argument("--proxy-server='direct://'")
     chrome_options.add_argument("--proxy-bypass-list=*")
     chrome_options.add_argument("--start-maximized")
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
 
     driver = webdriver.Chrome(chrome_options=chrome_options)
     # driver = webdriver.PhantomJS()
@@ -216,7 +217,7 @@ def Search_HashTag(driver, user, query):
     return page_source
 
 
-def Search_Specific_User_TimeFrame(driver, user, sinceDate, untilDate, query=""):
+def Search_logged_in_User(driver, user, sinceDate='', untilDate='', query=""):
     driver.get("https://twitter.com/search-advanced?lang=en")
     # initial wait for the search results to load
     # wait until the search box has loaded:
@@ -247,61 +248,65 @@ def Search_Specific_User_TimeFrame(driver, user, sinceDate, untilDate, query="")
     driver.execute_script("arguments[0].removeAttribute('readonly')", sinceBox)
     driver.execute_script("arguments[0].removeAttribute('readonly')", untilBox)
 
-    untilBox.send_keys(untilDate)
+    if untilDate == "" and sinceDate != "":
+        flash('Both Dates must be picked!')
+    elif sinceDate == "" and untilDate != "":
+        flash('Both Dates must be picked!')
+    elif untilDate != "" and sinceDate != "":
+        untilBox.send_keys(untilDate)
+        #####For some reason the date pickers dont work if since is inputted before until??
+        sinceBox.send_keys(sinceDate)
 
-    #####For some reason the date pickers dont work if since is inputted before until??
+        # Submit
+        sinceBox.submit()
 
-    sinceBox.send_keys(sinceDate)
+        # initial wait for the search results to load
+        wait = WebDriverWait(driver, 10)
 
-    # Submit
-    sinceBox.submit()
+        try:
+            # wait until the first search result is found.
+            # Search results will be tweets, which are html list items and have the class='data-item-id':
+            wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "li[data-item-id]")))
 
-    # initial wait for the search results to load
-    wait = WebDriverWait(driver, 10)
+            # scroll down to the last tweet until there are no more tweets:
+            while True:
 
-    try:
-        # wait until the first search result is found.
-        # Search results will be tweets, which are html list items and have the class='data-item-id':
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "li[data-item-id]")))
+                # extract all the tweets:
+                tweets = driver.find_elements_by_css_selector("li[data-item-id]")
 
-        # scroll down to the last tweet until there are no more tweets:
-        while True:
+                # keep scrolling:
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-            # extract all the tweets:
-            tweets = driver.find_elements_by_css_selector("li[data-item-id]")
+                # find number of visible tweets:
+                number_of_tweets = len(tweets)
 
-            # keep scrolling:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                # Wait for more to load
+                wait = WebDriverWait(driver, 5)
 
-            # find number of visible tweets:
-            number_of_tweets = len(tweets)
+                try:
+                    # wait for more tweets to be visible:
+                    wait.until(wait_for_more_than_n_elements_to_be_present(
+                        (By.CSS_SELECTOR, "li[data-item-id]"), number_of_tweets))
 
-            # Wait for more to load
-            wait = WebDriverWait(driver, 5)
+                except TimeoutException:
+                    # if no more are visible the "wait.until" call will timeout.
+                    # Catch the exception and exit the while loop:
+                    break
 
-            try:
-                # wait for more tweets to be visible:
-                wait.until(wait_for_more_than_n_elements_to_be_present(
-                    (By.CSS_SELECTOR, "li[data-item-id]"), number_of_tweets))
+            # extract the html for the whole lot:
+            page_source = driver.page_source
 
-            except TimeoutException:
-                # if no more are visible the "wait.until" call will timeout.
-                # Catch the exception and exit the while loop:
-                break
+        except TimeoutException:
+            # if there are no search results then the
+            # "wait.until" call in the first "try" statement will never happen and it will time out.
+            # So we catch that exception and return no html.
+            page_source = None
 
-        # extract the html for the whole lot:
-        page_source = driver.page_source
-
-    except TimeoutException:
-        # if there are no search results then the
-        # "wait.until" call in the first "try" statement will never happen and it will time out.
-        # So we catch that exception and return no html.
-        page_source = None
-
-    return page_source
+        return page_source
 
 
-def Search_Specific_User(driver, user, query=""):
+
+def Search_Specific_User(driver, user, sinceDate, untilDate, query=""):
     driver.get("https://twitter.com/search-advanced?lang=en")
     # initial wait for the search results to load
     # wait until the search box has loaded:
@@ -319,52 +324,74 @@ def Search_Specific_User(driver, user, query=""):
     # enter your search string in the search box:
     User.send_keys(user)
 
-    # Submit
-    User.submit()
+    # since
+    sinceBox = driver.wait.until(EC.presence_of_element_located((By.NAME, "since")))
 
-    # initial wait for the search results to load
-    wait = WebDriverWait(driver, 10)
+    # until
+    untilBox = driver.wait.until(EC.presence_of_element_located((By.NAME, "until")))
 
-    try:
-        # wait until the first search result is found.
-        # Search results will be tweets, which are html list items and have the class='data-item-id':
-        wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "li[data-item-id]")))
+    # ActionChains(driver).move_to_element(sinceBox).click().send_keys(sinceDate).perform()
 
-        # scroll down to the last tweet until there are no more tweets:
-        while True:
+    # ActionChains(driver).move_to_element(untilBox).click().send_keys(untilDate).perform()
 
-            # extract all the tweets:
-            tweets = driver.find_elements_by_css_selector("li[data-item-id]")
+    driver.execute_script("arguments[0].removeAttribute('readonly')", sinceBox)
+    driver.execute_script("arguments[0].removeAttribute('readonly')", untilBox)
 
-            # keep scrolling:
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    if untilDate == "" and sinceDate != "":
+        flash('Both Dates must be picked!')
+    elif sinceDate == "" and untilDate != "":
+        flash('Both Dates must be picked!')
+    elif untilDate != "" and sinceDate != "":
+        untilBox.send_keys(untilDate)
+        #####For some reason the date pickers dont work if since is inputted before until??
+        sinceBox.send_keys(sinceDate)
 
-            # find number of visible tweets:
-            number_of_tweets = len(tweets)
+        # Submit
+        sinceBox.submit()
 
-            # Wait for more to load
-            wait = WebDriverWait(driver, 10)
+        # initial wait for the search results to load
+        wait = WebDriverWait(driver, 10)
 
-            try:
-                # wait for more tweets to be visible:
-                wait.until(wait_for_more_than_n_elements_to_be_present(
-                    (By.CSS_SELECTOR, "li[data-item-id]"), number_of_tweets))
+        try:
+            # wait until the first search result is found.
+            # Search results will be tweets, which are html list items and have the class='data-item-id':
+            wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, "li[data-item-id]")))
 
-            except TimeoutException:
-                # if no more are visible the "wait.until" call will timeout.
-                # Catch the exception and exit the while loop:
-                break
+            # scroll down to the last tweet until there are no more tweets:
+            while True:
 
-        # extract the html for the whole lot:
-        page_source = driver.page_source
+                # extract all the tweets:
+                tweets = driver.find_elements_by_css_selector("li[data-item-id]")
 
-    except TimeoutException:
-        # if there are no search results then the
-        # "wait.until" call in the first "try" statement will never happen and it will time out.
-        # So we catch that exception and return no html.
-        page_source = None
+                # keep scrolling:
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
-    return page_source
+                # find number of visible tweets:
+                number_of_tweets = len(tweets)
+
+                # Wait for more to load
+                wait = WebDriverWait(driver, 5)
+
+                try:
+                    # wait for more tweets to be visible:
+                    wait.until(wait_for_more_than_n_elements_to_be_present(
+                        (By.CSS_SELECTOR, "li[data-item-id]"), number_of_tweets))
+
+                except TimeoutException:
+                    # if no more are visible the "wait.until" call will timeout.
+                    # Catch the exception and exit the while loop:
+                    break
+
+            # extract the html for the whole lot:
+            page_source = driver.page_source
+
+        except TimeoutException:
+            # if there are no search results then the
+            # "wait.until" call in the first "try" statement will never happen and it will time out.
+            # So we catch that exception and return no html.
+            page_source = None
+
+        return page_source
 
 
 def search_twitter(driver, query):

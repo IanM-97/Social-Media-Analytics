@@ -28,7 +28,7 @@ def check_page_token(FBpageToken):
     extended_token = graph.extend_access_token(app_id, app_secret)
     #print(extended_token) #verify that it expires in 60 days
 
-def extract_posts(pageToken=FBpageToken, pageID=mypage):
+def extract_Facebook_posts(pageToken=FBpageToken, pageID=mypage):
     graph = facebook.GraphAPI(pageToken)
     posts = graph.get_connections(pageID, 'posts')
 
