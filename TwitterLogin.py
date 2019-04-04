@@ -30,7 +30,9 @@ Att = browser.find_element_by_xpath('//*[@id="stream-item-tweet-1067180894186819
 html = Att.get_attribute('outerHTML')
 attributes = BeautifulSoup(html, 'html.parser').a.attrs
 print(attributes)'''
+import datetime
 
+from Datepicker import SelectDate
 from bs4 import BeautifulSoup as bs
 from flask import flash
 from selenium import webdriver
@@ -64,7 +66,7 @@ def init_driver():
     chrome_options.add_argument("--proxy-server='direct://'")
     chrome_options.add_argument("--proxy-bypass-list=*")
     chrome_options.add_argument("--start-maximized")
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
 
     driver = webdriver.Chrome(chrome_options=chrome_options)
     # driver = webdriver.PhantomJS()
@@ -74,11 +76,9 @@ def init_driver():
 
     return driver
 
-
 def close_driver(driver):
     driver.close()
     return
-
 
 def login_twitter(driver, username, password):
     # opens the web page in the browser:
@@ -100,7 +100,6 @@ def login_twitter(driver, username, password):
     driver.find_element_by_class_name("EdgeButtom--medium").click()
 
     return True
-
 
 def Go_to_self(driver, username):
 
@@ -146,7 +145,6 @@ def Go_to_self(driver, username):
         page_source = None
 
     return page_source
-
 
 def Search_HashTag(driver, user, query):
     driver.get("https://twitter.com/search-advanced?lang=en")
@@ -216,7 +214,6 @@ def Search_HashTag(driver, user, query):
 
     return page_source
 
-
 def Search_logged_in_User(driver, user, sinceDate='', untilDate='', query=""):
     driver.get("https://twitter.com/search-advanced?lang=en")
     # initial wait for the search results to load
@@ -253,9 +250,26 @@ def Search_logged_in_User(driver, user, sinceDate='', untilDate='', query=""):
     elif sinceDate == "" and untilDate != "":
         flash('Both Dates must be picked!')
     elif untilDate != "" and sinceDate != "":
-        untilBox.send_keys(untilDate)
+        #untilBox.send_keys(untilDate)
         #####For some reason the date pickers dont work if since is inputted before until??
-        sinceBox.send_keys(sinceDate)
+        #sinceBox.send_keys(sinceDate)
+        NewSinceDate = datetime.datetime.strptime(sinceDate, "%Y-%m-%d")
+
+        sinceYear = NewSinceDate.strftime("%Y")
+        sinceMonth = NewSinceDate.strftime("%b")
+        sinceDay = NewSinceDate.strftime("%d").lstrip("0")
+
+        # Selecting since date
+        SelectDate(driver, "input-since", sinceYear, sinceMonth, sinceDay)
+
+        untilDate = datetime.datetime.strptime(untilDate, "%Y-%m-%d")
+
+        untilYear = untilDate.strftime("%Y")
+        untilMonth = untilDate.strftime("%b")
+        untilDay = untilDate.strftime("%d").lstrip("0")
+
+        # Selecting until date
+        SelectDate(driver, "input-until", untilYear, untilMonth, untilDay)
 
         # Submit
         sinceBox.submit()
@@ -334,20 +348,42 @@ def Search_Specific_User(driver, user, sinceDate, untilDate, query=""):
 
     # ActionChains(driver).move_to_element(untilBox).click().send_keys(untilDate).perform()
 
-    driver.execute_script("arguments[0].removeAttribute('readonly')", sinceBox)
-    driver.execute_script("arguments[0].removeAttribute('readonly')", untilBox)
-
     if untilDate == "" and sinceDate != "":
         flash('Both Dates must be picked!')
     elif sinceDate == "" and untilDate != "":
         flash('Both Dates must be picked!')
     elif untilDate != "" and sinceDate != "":
-        untilBox.send_keys(untilDate)
+
+        NewSinceDate = datetime.datetime.strptime(sinceDate, "%Y-%m-%d")
+
+        sinceYear = NewSinceDate.strftime("%Y")
+        sinceMonth = NewSinceDate.strftime("%b")
+        sinceDay = NewSinceDate.strftime("%d").lstrip("0")
+
+        # Selecting since date
+        SelectDate(driver,"input-since",sinceYear,sinceMonth,sinceDay)
+
+        untilDate = datetime.datetime.strptime(untilDate, "%Y-%m-%d")
+
+        untilYear = untilDate.strftime("%Y")
+        untilMonth = untilDate.strftime("%b")
+        untilDay = untilDate.strftime("%d").lstrip("0")
+
+        # Selecting until date
+        SelectDate(driver, "input-until", untilYear, untilMonth, untilDay)
+
+        #driver.getElementById("since").value = sinceDate
+
+        #driver.getElementById("until").value = sinceDate
+
+       # untilBox.send_keys(untilDate)
         #####For some reason the date pickers dont work if since is inputted before until??
-        sinceBox.send_keys(sinceDate)
+       # sinceBox.send_keys(sinceDate)
+
+
 
         # Submit
-        sinceBox.submit()
+        User.submit()
 
         # initial wait for the search results to load
         wait = WebDriverWait(driver, 10)
@@ -386,9 +422,7 @@ def Search_Specific_User(driver, user, sinceDate, untilDate, query=""):
             page_source = driver.page_source
 
         except TimeoutException:
-            # if there are no search results then the
-            # "wait.until" call in the first "try" statement will never happen and it will time out.
-            # So we catch that exception and return no html.
+            # if there are no search results then the function will return no html.
             page_source = None
 
         return page_source

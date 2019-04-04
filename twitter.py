@@ -18,8 +18,10 @@ api = tweepy.API(auth)
 
 stuff = api.user_timeline(screen_name = 'realdonaldtrump', count = 1000, include_rts = True)
 
-
+i=0
 for status in stuff:
+    i+=1
+    print("Tweet number: ", i)
     print("ID:" , status.id)
     print("Text:" , status.text)
     print("Favourites:" , status.favorite_count)

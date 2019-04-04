@@ -43,14 +43,14 @@ def extract_Facebook_posts(pageToken=FBpageToken, pageID=mypage):
         post_id = post['id']
         likes = graph.get_connections(post_id, connection_name='reactions', summary='true')
         comments = graph.get_connections(post_id, connection_name='comments', summary='true')
-        print("******************Next Post******************")
-        print("\nPost Number: ", postNumber)
-        print("Time Posted: ", post['created_time'])
-        print("Post: ", post['message'])
-        print("Reations: ", likes['summary']['total_count'])
-        print("Comments: ", comments['summary']['total_count'])
+        #print("******************Next Post******************")
+        #print("\nPost Number: ", postNumber)
+        #print("Time Posted: ", post['created_time'])
+        #print("Post: ", post['message'])
+        #print("Reations: ", likes['summary']['total_count'])
+        #print("Comments: ", comments['summary']['total_count'])
         value += (likes['summary']['total_count'] * 0.15) + (comments['summary']['total_count'] * 0.10)
-        print("Value: ", round(total_Value, 2))
+        #print("Value: ", round(total_Value, 2))
 
         total_likes += likes['summary']['total_count']
         total_comments += comments['summary']['total_count']
