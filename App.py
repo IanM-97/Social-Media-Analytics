@@ -115,7 +115,49 @@ def SearchTwitterResult():
     session['totalTweetReplies'] = twitter_results[3]
     session['totalNumofTweets'] = twitter_results[4]
 
-    return redirect("/TwitterResults")
+    return redirect("/SearchTwitterResults")
+
+
+@app.route("/SearchTwitterResults", methods=['POST'])
+def SearchTwitterROIResult():
+    totalTweetValues = session['totalTweetValues']
+    totalTweetRetweets = session['totalTweetRetweets']
+    totalTweetFavourites = session['totalTweetFavourites']
+    totalTweetReplies = session['totalTweetReplies']
+    totalNumofTweets = session['totalNumofTweets']
+
+    def DeletePrevChart():
+        os.remove('static/SearchTwitterROIplot.png')
+
+    def create_Chart():
+        ys = [session['totalTweetRetweets'], session['totalTweetFavourites'], session['totalTweetReplies']]
+        xs = ["Retweets", "Favourites", "Replies"]
+        colors = ['red', 'lightblue', 'green']
+        plt.pie(ys, startangle=90, autopct='%.1f%%', shadow=True, colors=colors,
+                wedgeprops={"edgecolor": "black", 'linewidth': 1, 'linestyle': 'solid', 'antialiased': True},
+                pctdistance=0.9, )
+        plt.title('Metrics')
+        plt.legend(loc='center left', labels=xs)
+        # plt.tight_layout()
+        plt.savefig('static/SearchTwitterROIplot.png')
+
+    my_file = Path('static/SearchTwitterROIplot.png')
+
+    # Check if Plot already exists or not to prevent overlap of PNG files
+    if my_file.is_file():
+        # Delete the Plot
+        DeletePrevChart()
+    else:
+        create_Chart()
+
+    if request.method == "POST":
+        if request.form['bsubmit'] == "Calculate ROI":
+            return render_template("TwitterROI.html",
+                                   totalTweetValues=totalTweetValues,
+                                   totalTweetRetweets=totalTweetRetweets,
+                                   totalTweetFavourites=totalTweetFavourites,
+                                   totalTweetReplies=totalTweetReplies,
+                                   totalNumofTweets=totalNumofTweets)
 
 
 @app.route('/LoginTwitter')
@@ -163,6 +205,15 @@ def twitter_login_success():
             if page_source != None:
                 for item in extract_tweets(page_source):
                     twitter_results.append(item)
+
+                # find and click drop down containing log out
+                LogoutBox = '//*[@id="user-dropdown-toggle"]'
+                driver.find_element_by_xpath(LogoutBox).click()
+
+                # finding and clicking log out
+                Logout = "/html/body/div[2]/div[1]/div[2]/div/div/div[3]/ul/li[1]/div/ul/li[13]/button"
+                driver.find_element_by_xpath(Logout).click()
+
             elif page_source == None:
                 win32api.MessageBox(0, "No tweets were found.", "Search Unsuccessful", 0x00001000)
                 return render_template("loginSuccessTwitter.html")

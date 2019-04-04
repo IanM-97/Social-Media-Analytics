@@ -66,7 +66,7 @@ def init_driver():
     chrome_options.add_argument("--proxy-server='direct://'")
     chrome_options.add_argument("--proxy-bypass-list=*")
     chrome_options.add_argument("--start-maximized")
-    # chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
 
     driver = webdriver.Chrome(chrome_options=chrome_options)
     # driver = webdriver.PhantomJS()
@@ -422,7 +422,7 @@ def Search_Specific_User(driver, user, sinceDate, untilDate, query=""):
             page_source = driver.page_source
 
         except TimeoutException:
-            # if there are no search results then the function will return no html.
+            # if there are no search results then the return no html.
             page_source = None
 
         return page_source
