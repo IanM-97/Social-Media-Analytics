@@ -1,0 +1,68 @@
+<HTML>
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <title>Social Media Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SocialMediaStyle.css') }}">
+</head>
+<Body class="twitterBackground">
+<div class=overlay>
+        <div class="spinner"></div>
+</div>
+<div id="containernavbar">
+    <div class="navbar">
+        <ul class="nav">
+            <li class="left"><a href="/" onclick="$('.overlay').show();"><h1 class="menu">Home</h1></a></li>
+           <li class="right"><a href="/shutdown" onclick="$('.overlay').show();"><h1 class="menu">Quit</h1></a></li>
+        </ul>
+    </div>
+</div>
+<div id="containerheader">
+    <h1 class="heading">Twitter Analytics</h1>
+</div>
+<div id="containerSearch">
+    <div class="TwitterSearch">
+        <h2 class="TwitterChoiceHeader2">Search Options:</h2>
+        <form method="POST">
+            <h3 class="TwitterChoiceHeader2">From User:</h3>
+            <input class="twitterLogin" type="text" name="username" placeholder="@username" autocomplete="off" required>
+	        <BR>
+            <h3 class="TwitterChoiceHeader2">From Date:</h3>
+            <input class="twitterLogin" type="date" name="FromDate" id="FromDate" placeholder="YYYY-MM-DD" min='1899-01-01' max='2000-13-13' required>
+	        <BR>
+            <h3 class="TwitterChoiceHeader2">To Date:</h3>
+            <input class="twitterLogin" type="date" name="ToDate" id="ToDate" placeholder="YYYY-MM-DD" min='1899-01-01' max='2000-13-13' required>
+	        <BR>
+            <h3 class="TwitterChoiceHeader2">Would you like to search a hashtag too?</h3>
+            <ul style="list-style:none">
+                <li>
+                      <input type="checkbox" class="foo">
+                      <div class="inputs">
+                        <h3 class="TwitterChoiceHeader2">Hashtag:</h3>
+                            <input class="twitterLogin" type="text" name="Hashtag">
+                        <BR>
+                      </div>
+                </li>
+            </ul>
+            <input class="twitterChoiceB" type="submit" name="bsubmit" value="Search" onclick="$('.overlay').show();">
+        </form>
+    </div>
+</div>
+</BODY>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script>
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1;
+    var yyyy = today.getFullYear();
+     if(dd<10){
+            dd='0'+dd
+        }
+        if(mm<10){
+            mm='0'+mm
+        }
+
+    today = yyyy+'-'+mm+'-'+dd;
+    document.getElementById("FromDate").setAttribute("max", today);
+    document.getElementById("ToDate").setAttribute("max", today);
+</script>
+</HTML>

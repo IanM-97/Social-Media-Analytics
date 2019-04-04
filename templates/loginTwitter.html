@@ -1,0 +1,36 @@
+<Html>
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <title>Social Media Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SocialMediaStyle.css') }}">
+</head>
+<Body class="twitterBackground">
+<div class=overlay>
+        <div class="spinner"></div>
+</div>
+<div id="containernavbar">
+    <div class="navbar">
+        <ul class="nav">
+            <li class="left"><a href="/" onclick="$('.overlay').show();" ><h1 class="menu">Home</h1></a></li>
+           <li class="right"><a href="/shutdown" onclick="$('.overlay').show();" ><h1 class="menu">Quit</h1></a></li>
+        </ul>
+    </div>
+</div>
+<div id="containerheader">
+    <h1 class="heading">Twitter Analytics</h1>
+</div>
+<div id="containerButtons">
+    <div class="TwitterChoice">
+        <h1 class="TwitterChoiceHeader">Please Enter <BR>your credentials:</h1>
+        <form method="POST">
+            <h2 class="TwitterChoiceHeader2">Username:</h2>
+            <input class="twitterLogin" type="text"  name="username" placeholder="username">
+            <h2 class="TwitterChoiceHeader2">Password:</h2>
+            <input class="twitterLogin" type="password"  name="password" placeholder="password"><BR>
+            <input class = "twitterChoiceB" type="submit" name="bsubmit" value="Log in" onclick="$('.overlay').show();">
+        </form>
+    </div>
+</div>
+</Body>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+</Html>

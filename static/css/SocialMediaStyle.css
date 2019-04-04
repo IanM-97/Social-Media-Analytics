@@ -1,0 +1,495 @@
+
+* { padding: 0; margin: 0; }
+.overlay {
+          position: absolute;/* Sit on top of the page content */
+          top:0;
+          left:0;
+          display: none; /* Hidden by default */
+          width: 100%; /* Full width (cover the whole page) */
+          height: 100%; /* Full height (cover the whole page) */
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+          z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+            }
+.spinner {
+   position: absolute;
+   left: 46%;
+   top: 40%;
+   height:60px;
+   width:60px;
+   margin:0px auto;
+   -webkit-animation: rotation .6s infinite linear;
+   -moz-animation: rotation .6s infinite linear;
+   -o-animation: rotation .6s infinite linear;
+   animation: rotation .6s infinite linear;
+   border-left:6px solid rgba(0,174,239,.15);
+   border-right:6px solid rgba(0,174,239,.15);
+   border-bottom:6px solid rgba(0,174,239,.15);
+   border-top:6px solid rgba(0,174,239,.8);
+   border-radius:100%;
+}
+
+@-webkit-keyframes rotation {
+   from {-webkit-transform: rotate(0deg);}
+   to {-webkit-transform: rotate(359deg);}
+}
+@-moz-keyframes rotation {
+   from {-moz-transform: rotate(0deg);}
+   to {-moz-transform: rotate(359deg);}
+}
+@-o-keyframes rotation {
+   from {-o-transform: rotate(0deg);}
+   to {-o-transform: rotate(359deg);}
+}
+@keyframes rotation {
+   from {transform: rotate(0deg);}
+   to {transform: rotate(359deg);}
+}
+
+button.logos {
+    background-color: Transparent;
+    border:none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    margin-right: 20px;
+    border-collapse: separate;
+    border-radius: 75px;
+}
+body.homebackground
+{
+    background: #1F1C2C;
+    background: -webkit-linear-gradient(to right, #928DAB, #1F1C2C);
+    background: linear-gradient(to right, #928DAB, #1F1C2C);
+}
+#containerButtons
+{
+    display: flex;              /* establish flex container */
+    flex-direction: column;     /* stack flex items vertically */
+    justify-content: center;    /* center items vertically, in this case */
+    align-items: center;        /* center items horizontally, in this case */
+    height: 60%;
+}
+#containernavbar
+{
+    height: 7%;
+}
+#containerheader
+{
+    display: flex;              /* establish flex container */
+    flex-direction: column;     /* stack flex items vertically */
+    justify-content: center;    /* center items vertically, in this case */
+    align-items: center;        /* center items horizontally, in this case */
+    height: 10%;
+}
+#containerBottom
+{
+    display: flex;              /* establish flex container */
+    flex-direction: column;     /* stack flex items vertically */
+    justify-content: flex-start;    /* center items vertically, in this case */
+    align-items: center;        /* center items horizontally, in this case */
+    height: 20%;
+}
+#containerSearch{
+    display: flex;              /* establish flex container */
+    flex-direction: column;
+    /*justify-content: flex-start;/* stack flex items vertically */
+    align-items: center;        /* center items horizontally, in this case */
+    height: 80%;
+}
+#containerROI{
+    display: flex;              /* establish flex container */
+    flex-direction: column;     /* stack flex items vertically */
+    justify-content: center;    /* center items vertically, in this case */
+    align-items: center;        /* center items horizontally, in this case */
+    height: 60%;
+}
+div.buttonSurround
+{
+    position: relative;
+    border-collapse:separate;
+    /*border:solid lightblue 1px;*/
+    background: transparent;
+    border-radius:6px;
+    display: inline-block;
+}
+img.logoIMG
+{
+    height: 200px;
+    width: 200px;
+    background: white;
+    border-radius: 75px;
+    cursor:pointer;
+}
+h1.heading
+{
+    color: white;
+    text-outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+}
+h1.menu
+{
+    color: white;
+    text-outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+}
+h1.bottom{
+    color: white;
+    text-outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+}
+div.header{
+    position: fixed;
+    border-collapse:separate;
+    /*border:solid lightblue 1px;*/
+    background: transparent;
+    border-radius:6px;
+    display: inline-block;
+    }
+.navbar {
+    overflow: hidden;
+    background-color: #333;
+    position: fixed; /* Set the navbar to fixed position */
+    top: 0; /* Position the navbar at the top of the page */
+    width: 100%; /* Full width */
+}
+.nav ul {
+  display: block;
+  list-style-type: none;
+}
+.nav li{
+    margin: 0 10px;
+    list-style-type:none;
+    display: inline-block;
+}
+.nav li.left{
+  float: left;
+    list-style-type:none;
+ }
+.nav.center .nav-inner {
+    text-align: center;
+}
+
+.nav.center .nav-inner .nav {
+    display:inline-block;
+    float: none;
+}
+.nav li.right{
+  float:right;
+    list-style-type:none;
+ }
+.nav li:hover {
+  background-color: lightgray;
+    cursor:pointer;
+}
+.nav li a {
+    text-decoration: none;
+   display: block;
+   height: 100%; /* Missing from other answers */
+    padding: 10px 10px;
+    cursor:pointer;
+}
+Body.twitterBackground{
+    background: #1DA1F2;
+}
+div.TwitterChoice{
+    position: relative;
+    border-collapse:separate;
+    border:solid #1DA1F2 1px;
+    background: white;
+    border-radius:15px;
+    display: block;
+    justify-content: center;
+    margin-top: 10%;
+    padding-top: 2%;
+    padding-left: 2%;
+    padding-bottom: 7%;
+    padding-right: 2%;
+    box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.75);
+    text-align: center;
+}
+h1.TwitterChoiceHeader{
+    color: #1DA1F2;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    padding-bottom: 20%;
+}
+h2.TwitterChoiceHeader2{
+    color: #1DA1F2;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+    display: block;
+    padding-bottom: 7%;
+}
+input[class="twitterChoiceB"]{
+    border-collapse:separate;
+    background:#1DA1F2;
+    font-family: 'Raleway',sans-serif;
+    color: white;
+    border-radius:15px;
+    display: inline-block;
+    border:5px;
+    border-style: outset;
+    padding: 4%;
+    margin-bottom: 5%;
+    cursor:pointer;
+}
+input[class="twitterChoiceB"]:hover{
+    border-collapse:separate;
+    background:#1DA1F2;
+    font-family: 'Raleway',sans-serif;
+    color: white;
+    border:5px;
+    border-radius:15px;
+    display: inline-block;
+    border-style: inset;
+    padding: 4%;
+    margin-bottom: 5%;
+    cursor:pointer;
+}
+input.twitterLogin{
+    border:solid #1DA1F2 2px;
+    border-radius:5px;
+    display: inline-block;
+    padding:2%;
+    margin-bottom: 7%;
+}
+
+h3.TwitterChoiceHeader2{
+    color: #1DA1F2;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    display: block;
+    padding-bottom: 2%;
+}
+h3.TwitterROIHeader{
+    color: #1DA1F2;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    display: block;
+}
+.inputs {
+  display: none;
+}
+
+.foo:checked + .inputs {
+  display: initial;
+}
+div.TwitterSearch{
+    position: relative;
+    border-collapse:separate;
+    border:solid #1DA1F2 1px;
+    background: white;
+    border-radius:15px;
+    display: block;
+    justify-content: center;
+    margin-top: 5%;
+    padding-top: 2%;
+    padding-left: 2%;
+    padding-right: 2%;
+    box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.75);
+    text-align: center;
+}
+body.facebookBackground{
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+}
+h1.facebookHeader1{
+    color: #3b5998;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    padding-bottom: 20%;
+}
+h2.facebookHeader2{
+    color: #3b5998;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+    padding-bottom: 10%;
+}
+h3.facebookHeader3{
+    color: #3b5998;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    padding-bottom: 5%;
+}
+div.facebookChoice{
+    position: relative;
+    border-collapse:separate;
+    border:solid #3b5998 1px;
+    background: white;
+    border-radius:15px;
+    display: block;
+    justify-content: center;
+    margin-top: 10%;
+    padding-top: 2%;
+    padding-left: 2%;
+    padding-right: 2%;
+    box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.75);
+    text-align: center;
+}
+h3.facebookROIHeader{
+    color: #3b5998;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    display: block;
+}
+input[class="facebookChoiceB"]{
+    border-collapse:separate;
+    background:#3b5998;
+    font-family: 'Raleway',sans-serif;
+    color: white;
+    border-radius:15px;
+    display: inline-block;
+    border:5px;
+    border-style: outset;
+    padding: 4%;
+    margin-bottom: 5%;
+    cursor:pointer;
+}
+input[class="facebookChoiceB"]:hover{
+    border-collapse:separate;
+    background:#3b5998;
+    font-family: 'Raleway',sans-serif;
+    color: white;
+    border:5px;
+    border-radius:15px;
+    display: inline-block;
+    border-style: inset;
+    padding: 4%;
+    margin-bottom: 5%;
+    cursor:pointer;
+}
+body.instagramBackground{
+    background: linear-gradient(to right, #833ab4, #fd1d1d, #fcb045);
+}
+h1.instagramHeader1{
+    color: #fd1d1d;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    padding-bottom: 20%;
+}
+h2.instagramHeader2{
+    color: #fd1d1d;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    text-align: center;
+    padding-bottom: 10%;
+}
+h3.instagramHeader3{
+    color: #fd1d1d;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    padding-bottom: 5%;
+}
+div.instagramChoice{
+    position: relative;
+    border-collapse:separate;
+    border:solid #fd1d1d 1px;
+    background: white;
+    border-radius:15px;
+    display: block;
+    justify-content: center;
+    margin-top: 10%;
+    padding-top: 2%;
+    padding-left: 2%;
+    padding-right: 2%;
+    box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.75);
+    text-align: center;
+}
+h3.instagramROIHeader{
+    color: #fd1d1d;
+    outline: black 1px;
+    font-family: 'Raleway',sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+    display: block;
+}
+input[class="instagramChoiceB"]{
+    border-collapse:separate;
+    background:#fd1d1d;
+    font-family: 'Raleway',sans-serif;
+    color: white;
+    border-radius:15px;
+    display: inline-block;
+    border:5px;
+    border-style: outset;
+    padding: 4%;
+    margin-bottom: 5%;
+    cursor:pointer;
+}
+input[class="instagramChoiceB"]:hover{
+    border-collapse:separate;
+    background:#fd1d1d;
+    font-family: 'Raleway',sans-serif;
+    color: white;
+    border:5px;
+    border-radius:15px;
+    display: inline-block;
+    border-style: inset;
+    padding: 4%;
+    margin-bottom: 5%;
+    cursor:pointer;
+}
+img.logoIMG2
+{
+    height: 20px;
+    width: 20px;
+    background: white;
+    border-radius: 75px;
+    cursor:pointer;
+}
+
+div.TwitterChoiceResult{
+    position: relative;
+    border-collapse:separate;
+    border:solid #1DA1F2 1px;
+    background: white;
+    border-radius:15px;
+    display: block;
+    justify-content: center;
+    margin-top: 15%;
+    padding-top: 2%;
+    padding-left: 2%;
+    padding-right: 2%;
+    box-shadow: 0px 0px 10px 3px rgba(0,0,0,0.75);
+    text-align: center;
+}

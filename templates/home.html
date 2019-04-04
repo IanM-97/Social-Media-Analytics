@@ -1,0 +1,44 @@
+<HTML>
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <title>Social Media Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SocialMediaStyle.css') }}">
+</head>
+<body class="homebackground">
+<div class=overlay>
+        <div class="spinner"></div>
+</div>
+<div id="containernavbar">
+    <div class="navbar">
+        <ul class="nav">
+            <li class="left"><a href="/" onclick="$('.overlay').show();"><h1 class="menu">Home</h1></a></li>
+            <li class="right"><a href="/shutdown" onclick="$('.overlay').show();"><h1 class="menu">Quit</h1></a></li>
+        </ul>
+    </div>
+</div>
+<div id="containerheader">
+    <h1 class="heading">Social Media Analytics</h1>
+</div>
+<div id="containerButtons">
+<div class="buttonSurround">
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<FORM method="post">
+    <button class="logos" type="submit" name="bsubmit" value="Twitter" onclick="$('.overlay').show();">
+    <img class="logoIMG" src="../static/Logos/Twitter.png"/>
+    </button>
+    <button class="logos" type="submit" name="bsubmit" value="Facebook" onclick="$('.overlay').show();">
+    <img class="logoIMG" src="../static/Logos/Facebook.png"/>
+    </button>
+    <button class="logos" type="submit" name="bsubmit" value="Instagram" onclick="$('.overlay').show();">
+    <img class="logoIMG" src="../static/Logos/Instagram.png"/>
+    </button>
+</FORM>
+</div>
+</div>
+<div id="containerBottom">
+    <h1 class="bottom">Please Select a Platform</h1>
+</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</HTML>

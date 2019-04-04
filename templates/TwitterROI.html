@@ -1,0 +1,26 @@
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SocialMediaStyle.css') }}">
+    <title>Here are your results</title>
+</head>
+	<Body class="twitterBackground">
+<div id="containernavbar">
+    <div class="navbar">
+        <ul class="nav">
+            <li class="left"><a href="/"><h1 class="menu">Home</h1></a></li>
+            <li class="right"><a href="/shutdown"><h1 class="menu">Quit</h1></a></li>
+        </ul>
+    </div>
+</div>
+<BR>
+<div id="containerROI">
+    <div class="TwitterChoiceResult">
+        <h2 class="TwitterChoiceHeader2">ROI of all Tweets in campaign:</h2>
+            <img style="width: 75%; height: 75%" src="static/TwitterROIplot.png" alt="Pie Chart">
+        <BR>
+            <h3 class="TwitterROIHeader">Total ROI Value: <BR> €{{totalTweetValues}}</h3>
+			<BR>
+    </div>
+</div>
+    </Body>
+</html>

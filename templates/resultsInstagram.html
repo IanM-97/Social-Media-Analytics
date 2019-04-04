@@ -1,0 +1,41 @@
+<html>
+<head>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SocialMediaStyle.css') }}">
+    <title>Here are your results</title>
+</head>
+	<Body class="instagramBackground">
+    <div class=overlay>
+        <div class="spinner"></div>
+</div>
+<div id="containernavbar">
+    <div class="navbar">
+        <ul class="nav">
+            <li class="left"><a href="/" onclick="$('.overlay').show();"><h1 class="menu">Home</h1></a></li>
+            <li class="right"><a href="/shutdown" onclick="$('.overlay').show();"><h1 class="menu">Quit</h1></a></li>
+        </ul>
+    </div>
+</div>
+<BR>
+<div id="containerheader">
+    <h1 class="heading">Instagram Analytics</h1>
+</div>
+<div id="containerButtons">
+    <div class="instagramChoice">
+        <h2 class="instagramHeader2">Totals of all Posts in campaign:</h2>
+            <h3 class="instagramHeader3">Total Number of Posts: {{totalInstagramPosts}}</h3>
+	        <BR>
+            <h3 class="instagramHeader3">Total Comments: {{totalInstagramComments}}</h3>
+			<BR>
+            <h3 class="instagramHeader3">Total Likes: {{totalInstagramLikes}}</h3>
+			<BR>
+			<h3 class="instagramHeader3">Calculate the return on investment on this campaign?</h3>
+            <BR>
+        <form method="POST">
+            <input class="instagramChoiceB" type="submit" name="bsubmit" id="bsubmit" value="Calculate ROI" onclick="$('.overlay').show();">
+        </form>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+</html>

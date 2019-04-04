@@ -1,0 +1,26 @@
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/SocialMediaStyle.css') }}">
+    <title>Here are your results</title>
+</head>
+	<Body class="facebookBackground">
+<div id="containernavbar">
+    <div class="navbar">
+        <ul class="nav">
+            <li class="left"><a href="/"><h1 class="menu">Home</h1></a></li>
+            <li class="right"><a href="/shutdown"><h1 class="menu">Quit</h1></a></li>
+        </ul>
+    </div>
+</div>
+<BR>
+<div id="containerROI">
+    <div class="facebookChoice">
+        <h2 class="facebookHeader2">ROI of all Posts in campaign:</h2>
+            <img style="width: 75%; height: 75%" src="static/facebookROIplot.png" alt="Pie Chart">
+        <BR>
+            <h3 class="facebookROIHeader">Total ROI Value: <BR> €{{totalFacebookValue}}</h3>
+			<BR>
+    </div>
+</div>
+    </Body>
+</html>
