@@ -8,7 +8,6 @@ import win32api
 import win32com.client
 import pythoncom
 
-import easygui
 import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, redirect, session
 from selenium.common.exceptions import NoSuchElementException
@@ -85,7 +84,7 @@ def SearchTwitterRender():
     return render_template("SearchTwitter.html")
 
 
-@app.route("/SearchTwitter", methods=['POST'])
+@app.route("/SearchTwitter", methods=['POST', 'GET'])
 def SearchTwitterResult():
     twitter_results = []
 
@@ -95,30 +94,47 @@ def SearchTwitterResult():
             toDate = request.form['ToDate']
             username = request.form['username']
             hashtag = request.form['Hashtag']
+            phrase = request.form['Phrase']
 
             print(fromDate)
             print(toDate)
 
-            page_source = Search_Specific_User(driver, username, fromDate, toDate, hashtag)
+            page_source = Search_Specific_User(driver, username, fromDate, toDate, hashtag, phrase)
 
             if page_source != None:
                 for item in extract_tweets(page_source):
                     twitter_results.append(item)
+
             elif page_source == None:
                 win32api.MessageBox(0, "No tweets were found.", "Search Unsuccessful", 0x00001000)
                 return render_template("SearchTwitter.html")
 
+            # Twitter results
+            session['totalTweetValues'] = twitter_results[0]
+            session['totalTweetRetweets'] = twitter_results[1]
+            session['totalTweetFavourites'] = twitter_results[2]
+            session['totalTweetReplies'] = twitter_results[3]
+            session['totalNumofTweets'] = twitter_results[4]
+
+            return redirect("/SearchTwitterResults")
+
+
+@app.route("/SearchTwitterResults")
+def SearchTwitterResultRender():
     # Twitter results
-    session['totalTweetValues'] = twitter_results[0]
-    session['totalTweetRetweets'] = twitter_results[1]
-    session['totalTweetFavourites'] = twitter_results[2]
-    session['totalTweetReplies'] = twitter_results[3]
-    session['totalNumofTweets'] = twitter_results[4]
+    totalTweetRetweets = session['totalTweetRetweets']
+    totalTweetFavourites = session['totalTweetFavourites']
+    totalTweetReplies = session['totalTweetReplies']
+    totalNumofTweets = session['totalNumofTweets']
 
-    return redirect("/SearchTwitterResults")
+    return render_template("resultsTwitter.html",
+                           totalTweetRetweets=totalTweetRetweets,
+                           totalTweetFavourites=totalTweetFavourites,
+                           totalTweetReplies=totalTweetReplies,
+                           totalNumofTweets=totalNumofTweets)
 
 
-@app.route("/SearchTwitterResults", methods=['POST'])
+@app.route("/SearchTwitterResults", methods=['POST', 'GET'])
 def SearchTwitterROIResult():
     totalTweetValues = session['totalTweetValues']
     totalTweetRetweets = session['totalTweetRetweets']
@@ -127,7 +143,7 @@ def SearchTwitterROIResult():
     totalNumofTweets = session['totalNumofTweets']
 
     def DeletePrevChart():
-        os.remove('static/SearchTwitterROIplot.png')
+        os.remove('static/Plots/SearchTwitterROIplot.png')
 
     def create_Chart():
         ys = [session['totalTweetRetweets'], session['totalTweetFavourites'], session['totalTweetReplies']]
@@ -139,16 +155,16 @@ def SearchTwitterROIResult():
         plt.title('Metrics')
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
-        plt.savefig('static/SearchTwitterROIplot.png')
+        plt.savefig('static/Plots/SearchTwitterROIplot.png')
 
-    my_file = Path('static/SearchTwitterROIplot.png')
+    my_file = Path('static/Plots/SearchTwitterROIplot.png')
 
     # Check if Plot already exists or not to prevent overlap of PNG files
     if my_file.is_file():
         # Delete the Plot
         DeletePrevChart()
-    else:
-        create_Chart()
+
+    create_Chart()
 
     if request.method == "POST":
         if request.form['bsubmit'] == "Calculate ROI":
@@ -199,8 +215,10 @@ def twitter_login_success():
         if request.form['bsubmit'] == "Search":
             fromDate = request.form['FromDate']
             toDate = request.form['ToDate']
+            hashtag = request.form['Hashtag']
+            phrase = request.form['Phrase']
 
-            page_source = Search_logged_in_User(driver, "@" + session['username'], fromDate, toDate)
+            page_source = Search_logged_in_User(driver, "@" + session['username'], fromDate, toDate, hashtag, phrase)
 
             if page_source != None:
                 for item in extract_tweets(page_source):
@@ -251,7 +269,7 @@ def TwitterROIResult():
     totalNumofTweets = session['totalNumofTweets']
 
     def DeletePrevChart():
-        os.remove('static/TwitterROIplot.png')
+        os.remove('static/Plots/TwitterROIplot.png')
 
     def create_Chart():
         ys = [session['totalTweetRetweets'], session['totalTweetFavourites'], session['totalTweetReplies']]
@@ -263,16 +281,16 @@ def TwitterROIResult():
         plt.title('Metrics')
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
-        plt.savefig('static/TwitterROIplot.png')
+        plt.savefig('static/Plots/TwitterROIplot.png')
 
-    my_file = Path('static/TwitterROIplot.png')
+    my_file = Path('static/Plots/TwitterROIplot.png')
 
     # Check if Plot already exists or not to prevent overlap of PNG files
     if my_file.is_file():
         # Delete the Plot
         DeletePrevChart()
-    else:
-        create_Chart()
+
+    create_Chart()
 
     if request.method == "POST":
         if request.form['bsubmit'] == "Calculate ROI":
@@ -314,6 +332,9 @@ def FacebookROIResult():
     totalFacebookComments = session['totalFacebookComments']
     totalFacebookReactions = session['totalFacebookReactions']
 
+    def DeletePrevChart():
+        os.remove('static/Plots/FacebookROIplot.png')
+
     def create_Chart():
         ys = [session['totalFacebookComments'], session['totalFacebookReactions']]
         xs = ["Comments", "Reactions"]
@@ -324,7 +345,14 @@ def FacebookROIResult():
         plt.title('Metrics')
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
-        plt.savefig('static/FacebookROIplot.png')
+        plt.savefig('static/Plots/FacebookROIplot.png')
+
+    my_file = Path('static/Plots/FacebookROIplot.png')
+
+    # Check if Plot already exists or not to prevent overlap of PNG files
+    if my_file.is_file():
+        # Delete the Plot
+        DeletePrevChart()
 
     create_Chart()
 
@@ -362,6 +390,9 @@ def InstagramResult():
 
 @app.route("/InstagramResults", methods=['POST'])
 def InstagramROIResult():
+    def DeletePrevChart():
+        os.remove('static/Plots/InstagramROIplot.png')
+
     def create_Chart():
         ys = [session['totalInstagramComments'], session['totalInstagramLikes']]
         xs = ["Comments", "Likes"]
@@ -372,7 +403,14 @@ def InstagramROIResult():
         plt.title('Metrics')
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
-        plt.savefig('static/InstagramROIplot.png')
+        plt.savefig('static/Plots/InstagramROIplot.png')
+
+    my_file = Path('static/Plots/InstagramROIplot.png')
+
+    # Check if Plot already exists or not to prevent overlap of PNG files
+    if my_file.is_file():
+        # Delete the Plot
+        DeletePrevChart()
 
     create_Chart()
 

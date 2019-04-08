@@ -214,7 +214,7 @@ def Search_HashTag(driver, user, query):
 
     return page_source
 
-def Search_logged_in_User(driver, user, sinceDate='', untilDate='', query=""):
+def Search_logged_in_User(driver, user, sinceDate='', untilDate='', hashtag='', phrase=''):
     driver.get("https://twitter.com/search-advanced?lang=en")
     # initial wait for the search results to load
     # wait until the search box has loaded:
@@ -223,14 +223,18 @@ def Search_logged_in_User(driver, user, sinceDate='', untilDate='', query=""):
     # wait until the search box has loaded:
     User = driver.wait.until(EC.presence_of_element_located((By.NAME, "from")))
 
+    phraseBox = driver.find_element_by_name("phrase")
+
     # find the search box in the html:
     driver.find_element_by_name("from").clear()
 
     # enter your search string in the search box:
     User.send_keys(user)
 
-    if (query != ""):
-        Hashtagbox.send_keys(query)
+    if (hashtag != ""):
+        Hashtagbox.send_keys(hashtag)
+    if (phrase != ""):
+        phraseBox.send_keys(phrase)
 
     # since
     sinceBox = driver.wait.until(EC.presence_of_element_located((By.NAME, "since")))
@@ -320,7 +324,7 @@ def Search_logged_in_User(driver, user, sinceDate='', untilDate='', query=""):
 
 
 
-def Search_Specific_User(driver, user, sinceDate, untilDate, query=""):
+def Search_Specific_User(driver, user, sinceDate, untilDate, hashtag="", phrase=''):
     driver.get("https://twitter.com/search-advanced?lang=en")
     # initial wait for the search results to load
     # wait until the search box has loaded:
@@ -329,11 +333,15 @@ def Search_Specific_User(driver, user, sinceDate, untilDate, query=""):
     # wait until the search box has loaded:
     User = driver.wait.until(EC.presence_of_element_located((By.NAME, "from")))
 
+    phraseBox = driver.find_element_by_name("phrase")
+
     # find the search box in the html:
     driver.find_element_by_name("from").clear()
 
-    if (query != ""):
-        Hashtagbox.send_keys(query)
+    if (hashtag != ""):
+        Hashtagbox.send_keys(hashtag)
+    if (phrase != ""):
+        phraseBox.send_keys(phrase)
 
     # enter your search string in the search box:
     User.send_keys(user)

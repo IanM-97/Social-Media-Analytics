@@ -32,13 +32,21 @@
             <h3 class="TwitterChoiceHeader2">To Date:</h3>
             <input class="twitterLogin" type="date" name="ToDate" id="ToDate" placeholder="YYYY-MM-DD" min='1899-01-01' max='2000-13-13' required>
 	        <BR>
-            <h3 class="TwitterChoiceHeader2">Would you like to search a hashtag too?</h3>
+            <h3 class="TwitterChoiceHeader2">Would you like to add another search variable?</h3>
             <ul style="list-style:none">
                 <li>
-                      <input type="checkbox" class="foo">
+                      <input type="checkbox" class="foo" value="Hashtag"> Hashtag
                       <div class="inputs">
                         <h3 class="TwitterChoiceHeader2">Hashtag:</h3>
-                            <input class="twitterLogin" type="text" name="Hashtag">
+                            <input class="twitterLogin" type="text" name="Hashtag" autocomplete="off">
+                        <BR>
+                      </div>
+                </li>
+                <li>
+                      <input type="checkbox" class="foo" value="Phrase"> Phrase
+                      <div class="inputs">
+                        <h3 class="TwitterChoiceHeader2">Phrase:</h3>
+                            <input class="twitterLogin" type="text" name="Phrase" autocomplete="off">
                         <BR>
                       </div>
                 </li>
