@@ -146,7 +146,7 @@ def SearchTwitterROIResult():
         os.remove('static/Plots/SearchTwitterROIplot.png')
 
     def create_Chart():
-        ys = [session['totalTweetRetweets'], session['totalTweetFavourites'], session['totalTweetReplies']]
+        ys = [totalTweetRetweets, totalTweetFavourites, totalTweetReplies]
         xs = ["Retweets", "Favourites", "Replies"]
         colors = ['red', 'lightblue', 'green']
         plt.pie(ys, startangle=90, autopct='%.1f%%', shadow=True, colors=colors,
@@ -168,7 +168,7 @@ def SearchTwitterROIResult():
 
     if request.method == "POST":
         if request.form['bsubmit'] == "Calculate ROI":
-            return render_template("TwitterROI.html",
+            return render_template("SearchTwitterROI.html",
                                    totalTweetValues=totalTweetValues,
                                    totalTweetRetweets=totalTweetRetweets,
                                    totalTweetFavourites=totalTweetFavourites,
