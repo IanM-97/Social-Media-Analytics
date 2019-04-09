@@ -140,7 +140,7 @@ def SearchTwitterROIResult():
     totalNumofTweets = session['totalNumofTweets']
 
     def DeletePrevChart():
-        os.remove('/static/Plots/SearchTwitterROIplot.png')
+        os.remove('static/Plots/SearchTwitterROIplot.png')
 
     def create_Chart():
         ys = [totalTweetRetweets, totalTweetFavourites, totalTweetReplies]
@@ -152,9 +152,10 @@ def SearchTwitterROIResult():
         plt.title('Metrics')
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
-        plt.savefig('/static/Plots/SearchTwitterROIplot.png')
+        plt.savefig('static/Plots/SearchTwitterROIplot.png')
+        plt.close()
 
-    my_file = Path('/static/Plots/SearchTwitterROIplot.png')
+    my_file = Path('static/Plots/SearchTwitterROIplot.png')
 
     # Check if Plot already exists or not to prevent overlap of PNG files
     if my_file.is_file():
@@ -264,7 +265,7 @@ def TwitterROIResult():
     totalNumofTweets = session['totalNumofTweets']
 
     def DeletePrevChart():
-        os.remove('/static/Plots/TwitterROIplot.png')
+        os.remove('static/Plots/TwitterROIplot.png')
 
     def create_Chart():
         ys = [session['totalTweetRetweets'], session['totalTweetFavourites'], session['totalTweetReplies']]
@@ -276,9 +277,10 @@ def TwitterROIResult():
         plt.title('Metrics')
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
-        plt.savefig('/static/Plots/TwitterROIplot.png')
+        plt.savefig('static/Plots/TwitterROIplot.png')
+        plt.close()
 
-    my_file = Path('/static/Plots/TwitterROIplot.png')
+    my_file = Path('static/Plots/TwitterROIplot.png')
 
     # Check if Plot already exists or not to prevent overlap of PNG files
     if my_file.is_file():
@@ -341,6 +343,7 @@ def FacebookROIResult():
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
         plt.savefig('static/Plots/FacebookROIplot.png')
+        plt.close()
 
     my_file = Path('static/Plots/FacebookROIplot.png')
 
@@ -399,6 +402,7 @@ def InstagramROIResult():
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
         plt.savefig('static/Plots/InstagramROIplot.png')
+        plt.close()
 
     my_file = Path('static/Plots/InstagramROIplot.png')
 
