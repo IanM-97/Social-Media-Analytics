@@ -2,11 +2,8 @@ import os
 import socket
 import threading
 import webbrowser
-from pathlib import Path
-
 import win32api
-import win32com.client
-import pythoncom
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 from flask import Flask, render_template, request, redirect, session
@@ -101,11 +98,11 @@ def SearchTwitterResult():
 
             page_source = Search_Specific_User(driver, username, fromDate, toDate, hashtag, phrase)
 
-            if page_source != None:
+            if page_source is not None:
                 for item in extract_tweets(page_source):
                     twitter_results.append(item)
 
-            elif page_source == None:
+            elif page_source is None:
                 win32api.MessageBox(0, "No tweets were found.", "Search Unsuccessful", 0x00001000)
                 return render_template("SearchTwitter.html")
 
@@ -143,7 +140,7 @@ def SearchTwitterROIResult():
     totalNumofTweets = session['totalNumofTweets']
 
     def DeletePrevChart():
-        os.remove('static/Plots/SearchTwitterROIplot.png')
+        os.remove('/static/Plots/SearchTwitterROIplot.png')
 
     def create_Chart():
         ys = [totalTweetRetweets, totalTweetFavourites, totalTweetReplies]
@@ -155,9 +152,9 @@ def SearchTwitterROIResult():
         plt.title('Metrics')
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
-        plt.savefig('static/Plots/SearchTwitterROIplot.png')
+        plt.savefig('/static/Plots/SearchTwitterROIplot.png')
 
-    my_file = Path('static/Plots/SearchTwitterROIplot.png')
+    my_file = Path('/static/Plots/SearchTwitterROIplot.png')
 
     # Check if Plot already exists or not to prevent overlap of PNG files
     if my_file.is_file():
@@ -188,11 +185,9 @@ def loginTwitter():
 
     if request.method == 'POST':
         if request.form['bsubmit'] == "Log in":
-            error = None
             login_twitter(driver, session['username'], session['password'])
             FailedLoginMessage = "//span[contains(.,'The username and password you entered did not match our " \
                                  "records. Please double-check and try again.')]"
-            SuccessfulLogin = "//div[contains(@aria-labelledby,'tweet-box-home-timeline-label')]"
             try:
                 driver.find_element_by_xpath(FailedLoginMessage)
             except NoSuchElementException:
@@ -220,7 +215,7 @@ def twitter_login_success():
 
             page_source = Search_logged_in_User(driver, "@" + session['username'], fromDate, toDate, hashtag, phrase)
 
-            if page_source != None:
+            if page_source is not None:
                 for item in extract_tweets(page_source):
                     twitter_results.append(item)
 
@@ -232,7 +227,7 @@ def twitter_login_success():
                 Logout = "/html/body/div[2]/div[1]/div[2]/div/div/div[3]/ul/li[1]/div/ul/li[13]/button"
                 driver.find_element_by_xpath(Logout).click()
 
-            elif page_source == None:
+            elif page_source is None:
                 win32api.MessageBox(0, "No tweets were found.", "Search Unsuccessful", 0x00001000)
                 return render_template("loginSuccessTwitter.html")
 
@@ -269,7 +264,7 @@ def TwitterROIResult():
     totalNumofTweets = session['totalNumofTweets']
 
     def DeletePrevChart():
-        os.remove('static/Plots/TwitterROIplot.png')
+        os.remove('/static/Plots/TwitterROIplot.png')
 
     def create_Chart():
         ys = [session['totalTweetRetweets'], session['totalTweetFavourites'], session['totalTweetReplies']]
@@ -281,9 +276,9 @@ def TwitterROIResult():
         plt.title('Metrics')
         plt.legend(loc='center left', labels=xs)
         # plt.tight_layout()
-        plt.savefig('static/Plots/TwitterROIplot.png')
+        plt.savefig('/static/Plots/TwitterROIplot.png')
 
-    my_file = Path('static/Plots/TwitterROIplot.png')
+    my_file = Path('/static/Plots/TwitterROIplot.png')
 
     # Check if Plot already exists or not to prevent overlap of PNG files
     if my_file.is_file():
