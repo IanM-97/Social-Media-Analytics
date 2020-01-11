@@ -1,7 +1,7 @@
 import facebook
 
-token = 'EAADm9nbycx4BANkZABl8OgEyVDk1AtOL7uwEa81bOossl6VrRhTZAyfZBCF8PrIKQZCYYEhydcy08jZCnjuqbvgWsZCowTcSaRg9UmqZBioXvg6gNwviYciaT3Vo0xnR7ijpL3yv6oxr7ZA5OcvAxyGxGlpQPwZAKWga8QkTlFFOZCZBwZDZD'
-FBpageToken = "EAADm9nbycx4BAJ9ZCAOaFZAp07eBWcZAJiR25iYZAzdYO8kZCnUQqZB8JWMeSk33KPBAZAGuyOrpnfipWIrzOTTDmjNjmDQyDqDdrW6zODQbr6wSF77xao0ybZA8ub9wEeKl9cKscxkn5IWPiMAVxiI4cLkbLwl2ATv340oLcDbS4AZDZD"
+token = ''
+FBpageToken = ""
 
 me = 'https://graph.facebook.com/v3.2/me?access_token=' + token
 
