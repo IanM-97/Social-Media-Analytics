@@ -1,6 +1,6 @@
 
-username = "themanmahon"
-password = "Ian_Mahon1"
+username = ""
+password = ""
 
 def extract_insta_posts(username=username, password=password):
     from InstagramAPI import InstagramAPI
